@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+    </settings>
+    <!-- Mapper를 사용하는데 있어서 매번 parameterType이나 resultType을 패키지까지 작성하는게 번거롭다 -->
+    <typeAliases>
+		<package name="com.reonsoft.example.board.vo"/>
+		<package name="com.reonsoft.example.member.vo"/>
+    </typeAliases>
+    <plugins>
+    	<plugin interceptor="com.reonsoft.example.interceptor.MybatisLogInterceptor"></plugin>
+    </plugins>
+</configuration>
+

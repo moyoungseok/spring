@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+/***********************************************************************
+ * 
+ * @ 화면명   : 게시판 SQL
+ * @ 파일명   : Board_SQL.xml
+ * @ 작성자   : 모영석
+ * @ 작성일   : 2019-01-14
+************************************************************************
+수정일				수정자		수정내용
+************************************************************************
+2019-01-14          모영석             최초작성
+************************************************************************/
+-->
+
+<mapper namespace="board.dao">  
+
+	<!-- 게시물 목록을 조회한다. -->
+    <select id="selectBBSList" parameterType="BaseVO" resultType="BBSVO">
+    SELECT RNO
+	      ,BBS_NO
+	      ,TITLE
+	      ,CONTENT
+	      ,NAME
+	      ,USE_YN
+	      ,VIEW_CNT
+	      ,REG_DATE
+	      ,MOD_DATE  
+	 FROM (SELECT RNO
+	             ,BBS_NO
+	             ,TITLE
+	             ,CONTENT
+	             ,NAME
+	             ,USE_YN
+	             ,VIEW_CNT
+	             ,REG_DATE
+	             ,MOD_DATE 
+	        FROM (SELECT ROWNUM RNO
+	                    ,BBS_NO
+	                    ,TITLE
+	                    ,CONTENT
+	                    ,NAME
+	                    ,USE_YN
+	                    ,VIEW_CNT
+	                    ,REG_DATE
+	                    ,MOD_DATE 
+	                FROM BBS
+	            ORDER BY BBS_NO DESC)
+	       WHERE #{pageIndex} * #{pageSize} >= RNO)
+	 WHERE RNO >= ((#{pageIndex} - 1) * #{pageSize}) + 1
+    </select>
+    
+    <select id="totalCountBBS"  resultType="int">
+    	SELECT COUNT(*) FROM BBS
+    </select>
+    <!-- 페이징을 위한 게시물 총 갯수 -->
+    <select id="countBBS">
+    	SELECT COUNT(*) FROM BBS
+    </select>
+    
+    <!-- 조회수 증가 -->
+    <update id="viewCount">
+    	UPDATE BBS SET VIEW_CNT=VIEW_CNT+1 WHERE BBS_NO=#{bbsNo} 
+    </update>
+    <!-- 선택한 게시물 정보을 조회한다. -->
+    <select id="selectBBSInfo" parameterType="BBSVO" resultType="BBSVO">
+    	SELECT * FROM BBS 
+    	WHERE BBS_NO=#{bbsNo}
+    </select>
+    
+    <!-- 선택한 게시물 정보를 수정한다. -->
+    <update id="updateBBS">
+    	UPDATE BBS SET TITLE=#{title}, CONTENT=#{content},  
+    	MOD_DATE=to_char(SYSDATE,'yyyymmddhh24miss') WHERE BBS_NO=#{bbsNo} 
+    </update>
+    
+    <!-- 게시물 삭제시 해당 게시물의 댓글들도 삭제 -->
+    <delete id="deleteBBSRpl">
+    	DELETE FROM REPLY WHERE BBS_NO=#{bbsNo}
+    </delete>
+    <!-- 선택한 게시물을 삭제한다. -->
+    <delete id="deleteBBS">
+    	DELETE FROM BBS WHERE BBS_NO=#{bbsNo} 
+    </delete>
+    
+     <!-- 게시글을 등록한다. -->
+    <insert id="insertBBS">
+    	INSERT INTO BBS VALUES(BBS_SEQ.NEXTVAL,#{title},#{content},#{name},1,0,to_char(SYSDATE,'yyyymmddhh24miss'),to_char(SYSDATE,'yyyymmddhh24miss'))
+    </insert>
+    
+    <!-- 댓글을 등록한다. -->
+    <insert id="insertRPL">
+    	INSERT INTO REPLY VALUES(#{bbsNo},REPLY_SQ.NEXTVAL,#{replyContent},'Y',#{name},null,to_char(SYSDATE,'yyyymmddhh24miss'),to_char(SYSDATE,'yyyymmddhh24miss'))
+    </insert>
+    
+    <!-- 선택한 게시물의 댓글들 -->
+     <select id="selectRPLList" parameterType="ReplyVO" resultType="ReplyVO">
+    	SELECT * FROM REPLY 
+    	WHERE BBS_NO=#{bbsNo}
+    </select>
+    
+    <!-- 댓글 삭제 -->
+    <delete id="deleteRPL">
+    	DELETE FROM REPLY WHERE REPLY_NO=${replyNo}
+    </delete>
+    
+    <!-- 댓글 수정 -->
+    <update id="updateRPL">
+    	UPDATE REPLY SET REPLY_CNT=#{replyContent}, REPLY_MOD=to_char(SYSDATE,'yyyymmddhh24miss') WHERE REPLY_NO=#{replyNo}
+    </update>
+    
+    <!-- -->
+    <delete id = "deleteReply">
+    	DELETE
+    </delete>
+</mapper>

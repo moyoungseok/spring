@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration>
+<Configuration>
+    <Properties>
+        <Property name="baseDir">D://log</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{[yyyy-MM-dd][HH:mm:ss.SSS]}[%5p][%F][%M] %m%n" charset="UTF-8" />
+        </Console>
+        <RollingFile name="file" fileName="${baseDir}/log/log.log" filePattern="${baseDir}/log/log.log.%d{yyyyMMdd}">
+            <PatternLayout pattern="%d{[yyyy-MM-dd][HH:mm:ss.SSS]}[%5p][%F][%M] %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="sqlFile" fileName="${baseDir}/log/sqlLog.log" filePattern="${baseDir}/log/sqlLog.log.%d{yyyyMMdd}">
+            <PatternLayout pattern="%d{[yyyy-MM-dd][HH:mm:ss.SSS]}[%5p][%F][%M] %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+	</Appenders>
+    <Loggers>
+    	<!-- level : ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF -->
+    	<logger name="jdbc.connection" level="WARN" additivity="false">
+		    <AppenderRef ref="console" />
+		</logger>
+		
+		<logger name="jdbc.audit" level="WARN" additivity="false">
+		    <AppenderRef ref="console" />
+		</logger>
+		
+		<logger name="jdbc.sqlonly" level="WARN" additivity="false">
+		    <AppenderRef ref="console" />
+		</logger>
+		
+		<logger name="jdbc.sqltiming" level="INFO" additivity="false">
+		    <AppenderRef ref="console" />
+		</logger>
+		
+		<logger name="jdbc.resultset" level="OFF" additivity="false">
+		    <AppenderRef ref="console" />
+		</logger>
+		
+		<logger name="jdbc.resultsettable" level="INFO" additivity="false">
+		    <AppenderRef ref="console" />
+		</logger>
+		
+<!-- 		<Logger name="com.reonsoft.example" level="DEBUG" additivity="false"> -->
+<!-- 			<AppenderRef ref="HCM0101_APLOG" /> -->
+<!-- 	    </Logger> -->
+
+        <logger name="com.reonsoft.example.interceptor.MybatisLogInterceptor" level="INFO" additivity="false">
+		    <AppenderRef ref="sqlFile" />
+		</logger>
+        
+        <Root level="DEBUG">	
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Root>
+    </Loggers>
+</Configuration>
